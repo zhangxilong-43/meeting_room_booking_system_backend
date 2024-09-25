@@ -1,6 +1,7 @@
 import { Module } from '@nestjs/common';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
+import { APP_GUARD } from '@nestjs/core';
 
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { UserModule } from './user/user.module';
@@ -12,6 +13,9 @@ import { User } from './user/entities/user.entity';
 import { RedisModule } from './redis/redis.module';
 import { EmailModule } from './email/email.module';
 import { JwtModule } from '@nestjs/jwt';
+import { LoginGuard } from './guard/login.guard';
+import { PermissionGuard } from './guard/permission.guard';
+
 @Module({
   imports: [
     JwtModule.registerAsync({
@@ -20,7 +24,7 @@ import { JwtModule } from '@nestjs/jwt';
         return {
           secret: configService.get('jwt_secret'),
           signOptions: {
-            expiresIn: '30m', // 默认 30 分钟
+            expiresIn: configService.get('jwt_access_token_expires_time'), // 默认 30 分钟
           },
         };
       },
@@ -56,6 +60,16 @@ import { JwtModule } from '@nestjs/jwt';
     EmailModule,
   ],
   controllers: [AppController],
-  providers: [AppService],
+  providers: [
+    AppService,
+    {
+      provide: APP_GUARD,
+      useClass: LoginGuard
+    },
+    {
+      provide: APP_GUARD,
+      useClass: PermissionGuard
+    } 
+  ],
 })
 export class AppModule {}
