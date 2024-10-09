@@ -7,7 +7,7 @@ import {
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { md5 } from 'src/utils';
-import { Repository } from 'typeorm';
+import { Repository, Like } from 'typeorm';
 import { JwtService } from '@nestjs/jwt';
 import { LoginUserDto } from './dto/login-user.dto';
 import { RegisterUserDto } from './dto/register-user.dto';
@@ -211,7 +211,6 @@ export class UserService {
     }
   }
 
-
   async initData() {
     const user1 = new User();
     user1.username = "zhangsan";
@@ -277,5 +276,39 @@ export class UserService {
         secret: this.configService.get('jwt_secret')
       },
     )
+  }
+
+  async freezeUserById(userId: number) {
+    const user = await this.userRepository.findOneBy({
+      id: userId
+    });
+    user.isFrozen = true;
+    await this.userRepository.save(user);
+  }
+
+  async findUsersByPage(username: string, nickName: string, email: string, pageNo: number, pageSize: number) {
+    const skipCount = (pageNo - 1) * pageSize;
+    const condition: Record<string, any> = {};
+
+    if(username) {
+      condition.username = Like(`%${username}%`);   
+    }
+    if(nickName) {
+      condition.nickName = Like(`%${nickName}%`); 
+    }
+    if(email) {
+      condition.email = Like(`%${email}%`); 
+    }
+    const [users, totalCount] = await this.userRepository.findAndCount({
+      select: ['id', 'username', 'nickName', 'email', 'phoneNumber', 'isFrozen', 'headPic', 'createTime'],
+      skip: skipCount,
+      take: pageSize,
+      where: condition
+    });
+
+    return {
+      users,
+      totalCount
+    }
   }
 }
