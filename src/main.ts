@@ -19,7 +19,7 @@ async function bootstrap() {
     .setTitle('会议室预订系统')
     .setDescription('api 接口文档')
     .setVersion('1.0')
-    .addBasicAuth({
+    .addBearerAuth({
       type: 'http',
       description: '基于 jwt 的认证',
     })
