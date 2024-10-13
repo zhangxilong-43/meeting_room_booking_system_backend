@@ -6,19 +6,19 @@ export class CreateBookingDto {
     message: '会议室id不能为空',
   })
   @ApiProperty()
-  meeting_room_id: string;
+  meetingRoomId: number;
 
   @IsNotEmpty({
     message: '开始时间不能为空',
   })
   @ApiProperty()
-  startTime: string;
+  startTime: Date;
 
   @IsNotEmpty({
     message: '结束时间不能为空',
   })
   @ApiProperty()
-  endTime: string;
+  endTime: Date;
 
   @ApiProperty()
   guests: string[];

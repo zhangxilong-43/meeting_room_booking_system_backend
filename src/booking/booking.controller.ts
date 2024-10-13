@@ -13,8 +13,8 @@ export class BookingController {
   }
 
   @Get()
-  findAll() {
-    return this.bookingService.findAll();
+  async findAll() {
+    return await this.bookingService.findAll();
   }
 
   @Get(':id')

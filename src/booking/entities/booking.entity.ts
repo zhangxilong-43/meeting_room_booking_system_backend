@@ -10,9 +10,12 @@ import {
   ManyToMany,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
+  JoinColumn
 } from 'typeorm';
 
-@Entity()
+@Entity({
+  name: 'booking'
+})
 export class Booking {
   @PrimaryGeneratedColumn()
   id: number;
@@ -41,6 +44,7 @@ export class Booking {
   room: MeetingRoom;
 
   @OneToOne(() => TimeSlot)
+  @JoinColumn()
   timeSlot: TimeSlot;
 
   @CreateDateColumn({

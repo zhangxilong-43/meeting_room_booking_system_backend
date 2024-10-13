@@ -1,7 +1,9 @@
 import { MeetingRoom } from 'src/meeting-room/entities/meeting-room.entity';
-import { Column, Entity, ManyToOne, PrimaryGeneratedColumn } from 'typeorm';
+import { Column, Entity, ManyToOne, PrimaryGeneratedColumn, JoinColumn } from 'typeorm';
 
-@Entity()
+@Entity({
+  name: 'timeSlot'
+})
 export class TimeSlot {
   @PrimaryGeneratedColumn()
   id: number;
@@ -18,10 +20,11 @@ export class TimeSlot {
 
   @Column({
     comment: '是否被预订',
-    default: false,
+    default: true,
   })
   isBooked: boolean;
 
-  @ManyToOne(() => MeetingRoom)
+  @ManyToOne(() => MeetingRoom, meetingRoom => meetingRoom.timeSlots)
+  @JoinColumn()
   room: MeetingRoom;
 }

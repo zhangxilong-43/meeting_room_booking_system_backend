@@ -2,9 +2,12 @@ import {
   Column,
   CreateDateColumn,
   Entity,
+  OneToMany,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
+  JoinColumn
 } from 'typeorm';
+import { TimeSlot } from 'src/timeslot/entities/timeslot.entity';
 
 @Entity()
 export class MeetingRoom {
@@ -53,4 +56,8 @@ export class MeetingRoom {
     comment: '更新时间',
   })
   updateTime: Date;
+
+  @OneToMany(() => TimeSlot, timeSlots => timeSlots.room)
+  @JoinColumn()
+  timeSlots: TimeSlot[];
 }
