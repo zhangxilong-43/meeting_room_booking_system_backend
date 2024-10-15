@@ -7,7 +7,7 @@ import {
   UpdateDateColumn,
   JoinColumn
 } from 'typeorm';
-import { TimeSlot } from 'src/timeslot/entities/timeslot.entity';
+import { Booking } from 'src/booking/entities/booking.entity';
 
 @Entity()
 export class MeetingRoom {
@@ -57,7 +57,9 @@ export class MeetingRoom {
   })
   updateTime: Date;
 
-  @OneToMany(() => TimeSlot, timeSlots => timeSlots.room)
+  @OneToMany(() => Booking, booking => booking.room, {
+    cascade: true
+  })
   @JoinColumn()
-  timeSlots: TimeSlot[];
+  bookings: Booking[];
 }

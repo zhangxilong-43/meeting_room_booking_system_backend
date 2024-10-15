@@ -1,19 +1,15 @@
 import { Injectable } from '@nestjs/common';
 import { CreateBookingDto } from './dto/create-booking.dto';
 import { UpdateBookingDto } from './dto/update-booking.dto';
-import { TimeSlot } from 'src/timeslot/entities/timeslot.entity';
 import { Booking } from 'src/booking/entities/booking.entity';
 import { MeetingRoom } from 'src/meeting-room/entities/meeting-room.entity';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import { Repository, In } from 'typeorm';
 import { User } from 'src/user/entities/user.entity';
 
 @Injectable()
 export class BookingService {
   
-  @InjectRepository(TimeSlot)
-  private timeSlotRepository: Repository<TimeSlot>;
-
   @InjectRepository(Booking)
   private bookingRepository: Repository<Booking>;
 
@@ -24,33 +20,36 @@ export class BookingService {
   private userRepository: Repository<User>;
 
   async create(createBookingDto: CreateBookingDto) {
-    const meetingRoom = await this.meetingRoomRepository.findOneBy({
+    const meetingRoom = await this.meetingRoomRepository.findBy({
       id: createBookingDto.meetingRoomId
     });
-    const timeSlot = new TimeSlot();
-    timeSlot.startTime = createBookingDto.startTime;
-    timeSlot.endTime = createBookingDto.endTime;
-    timeSlot.room = meetingRoom;
-    await this.timeSlotRepository.save(timeSlot);
 
-    if (meetingRoom.timeSlots) {
-      meetingRoom.timeSlots.push(timeSlot);
-    } else {
-      meetingRoom.timeSlots = [timeSlot];
-    }
-    console.log(meetingRoom, 'meetingRoom');
+    const bookings = await this.bookingRepository
+    .createQueryBuilder('booking')
+    .where('booking.roomId = :roomId', { roomId: createBookingDto.meetingRoomId })
+    .andWhere('booking.startTime > NOW()')
+    .getMany();
+
+    console.log(bookings, 'meetingRoom');
     
-    await this.meetingRoomRepository.save(meetingRoom);
+    // const guests = await this.userRepository.find({
+    //   where: {
+    //     id: In([createBookingDto.meetingRoomId, ...createBookingDto.guests])
+    //   },
+    // })
+    // const { startTime, endTime } = createBookingDto;
+    // const booking = new Booking();
+    // const host = await this.userRepository.findOneBy({
+    //   id: createBookingDto.meetingRoomId
+    // })
+    // booking.room = meetingRoom;
+    // booking.host = host;
+    // booking.startTime = startTime;
+    // booking.endTime = endTime;
+    // booking.status = '成功';
+    // booking.guests = guests;
 
-    const booking = new Booking();
-    const host = await this.userRepository.findOneBy({
-      id: 2
-    })
-    booking.room = meetingRoom;
-    booking.timeSlot = timeSlot;
-    booking.host = host;
-
-    await this.bookingRepository.save(booking)
+    // await this.bookingRepository.save(booking);
   }
 
   async findAll() {

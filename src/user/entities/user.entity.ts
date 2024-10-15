@@ -80,6 +80,6 @@ export class User {
   })
   roles: Role[];
 
-  @ManyToMany(() => Booking)
-  meetings: Booking[];
+  @ManyToMany(() => Booking, booking => booking.guests)
+  bookings: Booking[];
 }

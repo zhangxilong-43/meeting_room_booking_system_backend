@@ -19,8 +19,6 @@ import { MeetingRoomModule } from './meeting-room/meeting-room.module';
 import { MeetingRoom } from './meeting-room/entities/meeting-room.entity';
 import { BookingModule } from './booking/booking.module';
 import { Booking } from './booking/entities/booking.entity';
-import { TimeSlotModule } from './timeslot/timeslot.module';
-import { TimeSlot } from './timeslot/entities/timeslot.entity';
 
 @Module({
   imports: [
@@ -51,7 +49,7 @@ import { TimeSlot } from './timeslot/entities/timeslot.entity';
           database: configService.get('mysql_server_database'),
           synchronize: true,
           logging: true,
-          entities: [Permission, Role, User, MeetingRoom, Booking, TimeSlot],
+          entities: [Permission, Role, User, MeetingRoom, Booking],
           poolSize: 10,
           connectorPackage: 'mysql2',
           extra: {
@@ -66,7 +64,6 @@ import { TimeSlot } from './timeslot/entities/timeslot.entity';
     EmailModule,
     MeetingRoomModule,
     BookingModule,
-    TimeSlotModule,
   ],
   controllers: [AppController],
   providers: [

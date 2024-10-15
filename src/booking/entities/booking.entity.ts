@@ -1,16 +1,14 @@
 import { MeetingRoom } from 'src/meeting-room/entities/meeting-room.entity';
 import { User } from 'src/user/entities/user.entity';
-import { TimeSlot } from 'src/timeslot/entities/timeslot.entity';
 import {
   Column,
   CreateDateColumn,
   Entity,
   ManyToOne,
-  OneToOne,
   ManyToMany,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
-  JoinColumn
+  JoinTable
 } from 'typeorm';
 
 @Entity({
@@ -19,6 +17,16 @@ import {
 export class Booking {
   @PrimaryGeneratedColumn()
   id: number;
+
+  @Column({
+    comment: '会议开始时间'
+  })
+  startTime: Date;
+
+  @Column({
+    comment: '会议结束时间'
+  })
+  endTime: Date;
 
   @Column({
     length: 20,
@@ -34,7 +42,8 @@ export class Booking {
   })
   note: string;
 
-  @ManyToMany(() => User)
+  @ManyToMany(() => User, user => user.bookings)
+  @JoinTable()
   guests: User[];
 
   @ManyToOne(() => User)
@@ -42,10 +51,6 @@ export class Booking {
 
   @ManyToOne(() => MeetingRoom)
   room: MeetingRoom;
-
-  @OneToOne(() => TimeSlot)
-  @JoinColumn()
-  timeSlot: TimeSlot;
 
   @CreateDateColumn({
     comment: '创建时间',
