@@ -29,11 +29,10 @@ export class Booking {
   endTime: Date;
 
   @Column({
-    length: 20,
-    comment: '状态（成功、取消）',
-    default: '成功',
+    comment: '状态（成功 1、取消 0）',
+    default: 1,
   })
-  status: string;
+  status: number;
 
   @Column({
     length: 100,
@@ -42,7 +41,9 @@ export class Booking {
   })
   note: string;
 
-  @ManyToMany(() => User, user => user.bookings)
+  @ManyToMany(() => User, user => user.bookings, {
+    cascade: true
+  })
   @JoinTable()
   guests: User[];
 
