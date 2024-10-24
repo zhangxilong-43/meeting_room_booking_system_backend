@@ -15,6 +15,12 @@ async function bootstrap() {
   app.useGlobalInterceptors(new InvokeRecordInterceptor());
   app.useGlobalFilters(new CustomExceptionFilter());
 
+  app.enableCors({
+    origin: 'http://127.0.0.1:8082', // 允许的来源
+    methods: 'GET,HEAD,PUT,PATCH,POST,DELETE', // 允许的HTTP方法
+    credentials: true, // 允许携带凭证
+  });
+
   const config = new DocumentBuilder()
     .setTitle('会议室预订系统')
     .setDescription('api 接口文档')
