@@ -159,6 +159,7 @@ export class UserController {
     const vo = await this.userService.login(loginUser, false);
     vo.accessToken = this.userService.signAccessToken(vo.userInfo);
     vo.refreshToken = this.userService.signRefreshToken(vo.userInfo);
+
     return vo;
   }
 

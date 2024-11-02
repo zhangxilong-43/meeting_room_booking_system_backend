@@ -6,7 +6,7 @@ import {
   HttpStatus,
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { md5 } from 'src/utils';
+import { md5, decryptPassword } from 'src/utils';
 import { Repository, Like } from 'typeorm';
 import { JwtService } from '@nestjs/jwt';
 import { LoginUserDto } from './dto/login-user.dto';
@@ -76,6 +76,7 @@ export class UserService {
       return '注册失败';
     }
   }
+
   async login(
     loginUserDto: LoginUserDto,
     isAdmin: boolean,
@@ -92,7 +93,7 @@ export class UserService {
       throw new HttpException('用户不存在', HttpStatus.BAD_REQUEST);
     }
 
-    if (user.password !== md5(loginUserDto.password)) {
+    if (user.password !== md5(decryptPassword(loginUserDto.password))) {
       throw new HttpException('密码错误', HttpStatus.BAD_REQUEST);
     }
 
@@ -254,6 +255,7 @@ export class UserService {
     await this.roleRepository.save([role1, role2]);
     await this.userRepository.save([user1, user2]);
   }
+
   signAccessToken(user) {
     return this.jwtService.sign(
       {
@@ -269,6 +271,7 @@ export class UserService {
       },
     );
   }
+
   signRefreshToken(user) {
     return this.jwtService.sign(
       {
@@ -281,6 +284,7 @@ export class UserService {
       },
     );
   }
+  
   async freezeUserById(userId: number) {
     const user = await this.userRepository.findOneBy({
       id: userId,
